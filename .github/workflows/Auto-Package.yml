@@ -6,7 +6,7 @@
 # Blog: https://p3terx.com
 #=================================================
 
-name: Packages-AutoBuild
+name: Auto-Packages
 
 on: 
   repository_dispatch:
@@ -17,17 +17,20 @@ on:
   #   - cron: 0 1 */1 * *
 
 env:
+  REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   PPPOE_USERNAME: ${{ secrets.PPPOE_USERNAME }}
   PPPOE_PASSWD: ${{ secrets.PPPOE_PASSWD }}
   SCKEY: ${{ secrets.SCKEY }}
+  REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+  REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  PASSWORD: ${{ secrets.PASSWORD }}
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
   TZ: Asia/Shanghai
 
 jobs:
   build:
-    if: github.event.repository.owner.id == github.event.sender.id || github.event.sender.id == '13660847'
     runs-on: ubuntu-latest
     
     name: Build ${{matrix.target}}
@@ -41,6 +44,13 @@ jobs:
       uses: actions/checkout@main
       with:
         fetch-depth: 0
+
+    - name: cancel running workflows
+      uses: styfle/cancel-workflow-action@main
+      if: contains(github.event.action, 'cw')
+      with:
+        workflow_id: 13660847
+        access_token: ${{ github.token }}
 
     - name: Load Settings.ini
       run: |

@@ -332,3 +332,10 @@ jobs:
     #    REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
     #    REMOTE_USER: root
     #    TARGET: "/www/wwwroot/${{ secrets.REMOTE_HOST }}/packages/${{ env.MTARGET }}/"
+
+    - name: Delete workflow runs
+      uses: Mattraks/delete-workflow-runs@main
+      continue-on-error: true
+      with:
+        retain_days: 10
+        keep_minimum_runs: 1
